@@ -36,12 +36,17 @@ export class RapportComponent implements OnInit {
   }
 
   loadRapport(pieceId: string) {
-    this.isLoading = true;
-    this.svc.getPieceRapport(pieceId).subscribe({
-      next: (d) => { this.rapport = d; this.isLoading = false; },
-      error: () => { this.hasError = true; this.isLoading = false; }
-    });
-  }
+  this.isLoading = true;
+  this.svc.getPieceRapport(pieceId).subscribe({
+    next: (d) => {
+      console.log('Rapport reçu :', d);
+      console.log('shap_image_path :', d.shap_image_path);
+      this.rapport = d;
+      this.isLoading = false;
+    },
+    error: () => { this.hasError = true; this.isLoading = false; }
+  });
+}
 
   getImageUrl(path: string) { return this.svc.getImageUrl(path); }
 
@@ -77,8 +82,10 @@ export class RapportComponent implements OnInit {
   }
 
   getSevClass(g: string): string {
-    return g === 'elevee' ? 'sev-high' : g === 'moyenne' ? 'sev-med' : 'sev-low';
-  }
+  return g === 'Critique' ? 'sev-high' 
+       : g === 'Majeure'  ? 'sev-med' 
+       : 'sev-low';
+}
 
   get reportDate(): string {
     return new Date().toLocaleDateString('fr-FR', {

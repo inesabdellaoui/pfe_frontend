@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-users-list',
@@ -10,56 +12,53 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./users-list.component.css']
 })
 export class UsersListComponent implements OnInit {
-  isLoading  = false;
-  isSaving   = false;
-  hasError   = false;
-
-  // Filtres
-  searchTerm  = '';
-  filterRole  = '';
-
-  // Modals
-  showFormModal   = false;
+  isLoading = false;
+  isSaving = false;
+  searchTerm = '';
+  filterRole = '';
+  showFormModal = false;
   showDeleteModal = false;
-  isEditing       = false;
+  isEditing = false;
   userToDelete: any = null;
-
-  // Formulaire
   form: any = { prenom: '', nom: '', email: '', role: '', password: '', isActive: true };
   formErrors: any = {};
-
-  // Données mock
-  users: any[] = [
-    { id: 1, prenom: 'Yasmine', nom: 'Ahmed',    email: 'y.ahmed@draexlmaier.com',    role: 'RESPONSABLE_QUALITE', isActive: true  },
-    { id: 2, prenom: 'Mohamed', nom: 'Zitouni',  email: 'm.zitouni@draexlmaier.com',  role: 'ADMIN',               isActive: true  },
-    { id: 3, prenom: 'Salma',   nom: 'Trabelsi', email: 's.trabelsi@draexlmaier.com', role: 'CIP',                 isActive: true  },
-    { id: 4, prenom: 'Ines',    nom: 'Bensalem', email: 'i.bensalem@draexlmaier.com', role: 'RESPONSABLE_QUALITE', isActive: false },
-    { id: 5, prenom: 'Karim',   nom: 'Bouali',   email: 'k.bouali@draexlmaier.com',   role: 'CIP',                 isActive: true  },
-  ];
-
+  users: any[] = [];
   filteredUsers: any[] = [];
 
-  get totalUsers()  { return this.users.length; }
-  get activeUsers() { return this.users.filter(u => u.isActive).length; }
-  get adminUsers()  { return this.users.filter(u => u.role === 'ADMIN').length; }
+  private apiUrl = 'http://localhost:3000';
 
-  ngOnInit() { this.applyFilters(); }
+  constructor(private http: HttpClient, private authService: AuthService) {}
+
+  private getHeaders() {
+    const token = this.authService.getToken();
+    return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) };
+  }
+
+  get totalUsers() { return this.users.length; }
+  get activeUsers() { return this.users.filter(u => u.isActive !== false).length; }
+  get adminUsers() { return this.users.filter(u => u.role === 'ADMIN').length; }
+
+  ngOnInit() { this.loadUsers(); }
+
+  loadUsers() {
+    this.isLoading = true;
+    this.http.get<any[]>(`${this.apiUrl}/users`, this.getHeaders())
+      .subscribe({
+        next: (data) => { this.users = data; this.applyFilters(); this.isLoading = false; },
+        error: () => { this.isLoading = false; }
+      });
+  }
 
   applyFilters() {
     this.filteredUsers = this.users.filter(u => {
       const matchSearch = !this.searchTerm ||
-        `${u.prenom} ${u.nom} ${u.email}`.toLowerCase()
-          .includes(this.searchTerm.toLowerCase());
+        `${u.prenom} ${u.nom} ${u.email}`.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchRole = !this.filterRole || u.role === this.filterRole;
       return matchSearch && matchRole;
     });
   }
 
-  resetFilters() {
-    this.searchTerm = '';
-    this.filterRole = '';
-    this.applyFilters();
-  }
+  resetFilters() { this.searchTerm = ''; this.filterRole = ''; this.applyFilters(); }
 
   openCreate() {
     this.isEditing = false;
@@ -75,70 +74,49 @@ export class UsersListComponent implements OnInit {
     this.showFormModal = true;
   }
 
-  confirmDelete(user: any) {
-    this.userToDelete = user;
-    this.showDeleteModal = true;
-  }
+  confirmDelete(user: any) { this.userToDelete = user; this.showDeleteModal = true; }
 
-  closeModal() {
-    this.showFormModal   = false;
-    this.showDeleteModal = false;
-    this.userToDelete    = null;
-  }
+  closeModal() { this.showFormModal = false; this.showDeleteModal = false; this.userToDelete = null; }
 
   validate(): boolean {
     this.formErrors = {};
     if (!this.form.prenom) this.formErrors.prenom = 'Le prénom est obligatoire';
-    if (!this.form.nom)    this.formErrors.nom    = 'Le nom est obligatoire';
-    if (!this.form.email)  this.formErrors.email  = 'L\'email est obligatoire';
-    if (!this.form.role)   this.formErrors.role   = 'Le rôle est obligatoire';
-    if (!this.isEditing && !this.form.password)
-      this.formErrors.password = 'Le mot de passe est obligatoire';
+    if (!this.form.nom) this.formErrors.nom = 'Le nom est obligatoire';
+    if (!this.form.email) this.formErrors.email = 'L\'email est obligatoire';
+    if (!this.form.role) this.formErrors.role = 'Le rôle est obligatoire';
+    if (!this.isEditing && !this.form.password) this.formErrors.password = 'Le mot de passe est obligatoire';
     return Object.keys(this.formErrors).length === 0;
   }
 
   saveUser() {
     if (!this.validate()) return;
     this.isSaving = true;
-    setTimeout(() => {
-      if (this.isEditing) {
-        const idx = this.users.findIndex(u => u.id === this.form.id);
-        if (idx !== -1) this.users[idx] = { ...this.users[idx], ...this.form };
-      } else {
-        this.users.push({ id: Date.now(), ...this.form });
-      }
-      this.isSaving = false;
-      this.closeModal();
-      this.applyFilters();
-    }, 800);
+    const req = this.isEditing
+      ? this.http.put(`${this.apiUrl}/users/${this.form.id}`, this.form, this.getHeaders())
+      : this.http.post(`${this.apiUrl}/users`, this.form, this.getHeaders());
+    req.subscribe({
+      next: () => { this.isSaving = false; this.closeModal(); this.loadUsers(); },
+      error: () => { this.isSaving = false; }
+    });
   }
 
   deleteUser() {
     if (!this.userToDelete) return;
     this.isSaving = true;
-    setTimeout(() => {
-      this.users = this.users.filter(u => u.id !== this.userToDelete.id);
-      this.isSaving = false;
-      this.closeModal();
-      this.applyFilters();
-    }, 600);
+    this.http.delete(`${this.apiUrl}/users/${this.userToDelete.id}`, this.getHeaders())
+      .subscribe({
+        next: () => { this.isSaving = false; this.closeModal(); this.loadUsers(); },
+        error: () => { this.isSaving = false; }
+      });
   }
 
   getRoleLabel(role: string): string {
-    const map: Record<string, string> = {
-      ADMIN:               'Administrateur',
-      RESPONSABLE_QUALITE: 'Resp. Qualité',
-      CIP:                 'Resp. CIP',
-    };
+    const map: Record<string, string> = { ADMIN: 'Administrateur', RESPONSABLE_QUALITE: 'Resp. Qualité', CIP: 'Resp. CIP' };
     return map[role] ?? role;
   }
 
   getRoleClass(role: string): string {
-    const map: Record<string, string> = {
-      ADMIN:               'badge-admin',
-      RESPONSABLE_QUALITE: 'badge-rq',
-      CIP:                 'badge-cip',
-    };
+    const map: Record<string, string> = { ADMIN: 'badge-admin', RESPONSABLE_QUALITE: 'badge-rq', CIP: 'badge-cip' };
     return map[role] ?? '';
   }
 

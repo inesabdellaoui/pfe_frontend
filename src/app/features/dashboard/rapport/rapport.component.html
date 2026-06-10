@@ -87,9 +87,9 @@
         <div class="doc-meta-item">
           <span>Résultat</span>
           <strong class="result-tag"
-                  [class.tag-ok]="rapport.result === 'OK'"
-                  [class.tag-nio]="rapport.result === 'NIO'">
-            {{ rapport.result }}
+                  [class.tag-ok]="rapport.resultat === 'OK'"
+                  [class.tag-nio]="rapport.resultat === 'NIO'">
+            {{ rapport.resultat }}
           </strong>
         </div>
       </div>
@@ -158,9 +158,9 @@
       <div class="ai-result-block">
         <div class="ai-result-left">
           <div class="ai-result-badge"
-               [class.ai-ok]="rapport.result === 'OK'"
-               [class.ai-nio]="rapport.result === 'NIO'">
-            {{ rapport.result }}
+               [class.ai-ok]="rapport.resultat === 'OK'"
+               [class.ai-nio]="rapport.resultat === 'NIO'">
+            {{ rapport.resultat }}
           </div>
           <div class="ai-meta">
             <div class="ai-meta-row">
@@ -177,19 +177,28 @@
             </div>
           </div>
         </div>
-        <div class="ai-result-right" *ngIf="rapport.image_path">
-          <div class="img-report-wrap">
-            <img [src]="getImageUrl(rapport.image_path)"
-                 [alt]="rapport.reference_piece"
-                 (error)="$any($event.target).src='assets/images/no-image.png'"/>
-            <div class="img-caption">Image annotée — bounding box YOLOv8</div>
-          </div>
-        </div>
+        <div class="ai-result-right">
+  <!-- Image originale -->
+  <div class="img-report-wrap" *ngIf="rapport.image_path">
+    <img [src]="getImageUrl(rapport.image_path)"
+         [alt]="rapport.reference_piece"
+         (error)="$any($event.target).src='assets/images/no-image.png'"/>
+    <div class="img-caption">Image inspectée</div>
+  </div>
+
+  <!-- Carte SHAP -->
+  <div class="img-report-wrap" *ngIf="rapport.shap_image_path">
+    <img [src]="getImageUrl(rapport.shap_image_path)"
+         alt="Carte SHAP"
+         (error)="$any($event.target).src='assets/images/no-image.png'"/>
+    <div class="img-caption">Carte d'explication SHAP</div>
+  </div>
+</div>
       </div>
     </div>
 
     <!-- Section 4 : Défauts (uniquement NIO) -->
-    <div class="doc-section" *ngIf="rapport.result === 'NIO' && rapport.defauts?.length > 0">
+    <div class="doc-section" *ngIf="rapport.resultat === 'NIO' && rapport.defauts?.length > 0">
       <div class="section-title">
         <div class="section-num">4</div>
         Défauts détectés
@@ -200,7 +209,6 @@
             <th>#</th>
             <th>Type de défaut</th>
             <th>Gravité</th>
-            <th>Localisation (bbox)</th>
           </tr>
         </thead>
         <tbody>
@@ -212,22 +220,13 @@
                 {{ d.gravite }}
               </span>
             </td>
-            <td class="bbox-cell">
-              <span *ngIf="rapport.bbox_x !== null && rapport.bbox_x !== undefined" class="mono">
-                ({{ rapport.bbox_x?.toFixed(2) }},
-                 {{ rapport.bbox_y?.toFixed(2) }},
-                 {{ rapport.bbox_w?.toFixed(2) }},
-                 {{ rapport.bbox_h?.toFixed(2) }})
-              </span>
-              <span *ngIf="rapport.bbox_x === null || rapport.bbox_x === undefined">—</span>
-            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Section 4 (OK) -->
-    <div class="doc-section ok-section" *ngIf="rapport.result === 'OK'">
+    <div class="doc-section ok-section" *ngIf="rapport.resultat === 'OK'">
       <div class="section-title">
         <div class="section-num">4</div>
         Résultat de conformité

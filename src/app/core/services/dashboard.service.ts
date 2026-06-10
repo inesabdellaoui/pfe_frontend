@@ -109,16 +109,24 @@ getPieceRapport(id: string) {
 // URL image helper
 getImageUrl(path: string): string {
   if (!path) return 'assets/images/no-image.png';
-  
-  // Chemin SHAP → préfixe /shap
-  if (path.includes('shap_outputs')) {
-    const clean = path.replace(/\\/g, '/').split('shap_outputs/')[1];
-    return `http://localhost:3000/shap/${clean}`;
+
+  // Normaliser les backslashes Windows → slashes Unix
+  const normalized = path.replace(/\\/g, '/');
+
+  // Chemin SHAP
+  if (normalized.includes('shap_outputs')) {
+    const parts = normalized.split('shap_outputs/');
+    return `http://localhost:3000/shap/${parts[1]}`;
   }
-  
-  // Chemin uploads normal
-  const clean = path.replace(/\\/g, '/').split('uploads/')[1];
-  return `http://localhost:3000/uploads/${clean}`;
+
+  // Chemin uploads
+  if (normalized.includes('uploads/')) {
+    const parts = normalized.split('uploads/');
+    return `http://localhost:3000/uploads/${parts[1]}`;
+  }
+
+  // Fallback — chemin brut
+  return `http://localhost:3000/${normalized}`;
 }
 
 sendRapportByMail(pieceId: string, email: string) {
