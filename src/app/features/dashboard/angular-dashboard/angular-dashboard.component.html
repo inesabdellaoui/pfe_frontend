@@ -6,14 +6,7 @@
       <h1 class="dash-title">Vue d'ensemble</h1>
       <span class="dash-sub">Qualité cuir · {{ currentTime }}</span>
     </div>
-    <div class="dash-header-right">
-      <div class="user-chip">
-        <div class="chip-av">
-          {{ currentUser?.prenom?.[0] }}{{ currentUser?.nom?.[0] }}
-        </div>
-        <span>{{ currentUser?.prenom }} {{ currentUser?.nom }}</span>
-      </div>
-    </div>
+    
   </div>
 
   <!-- Filtres -->
@@ -71,7 +64,7 @@
         <span class="kpi-label">Inspections totales</span>
         <span class="kpi-value">{{ totalInspections | number }}</span>
       </div>
-      <div class="kpi-trend up">↑ +8.2%</div>
+      
     </div>
 
     <div class="kpi-card">
@@ -85,7 +78,7 @@
         <span class="kpi-label">Pièces OK</span>
         <span class="kpi-value">{{ piecesOK | number }}</span>
       </div>
-      <div class="kpi-trend up">↑ +7.1%</div>
+      
     </div>
 
     <div class="kpi-card">
@@ -101,7 +94,7 @@
         <span class="kpi-label">Pièces NIO</span>
         <span class="kpi-value">{{ piecesNIO | number }}</span>
       </div>
-      <div class="kpi-trend down">↑ +12.4%</div>
+      
     </div>
 
     <div class="kpi-card">
@@ -117,7 +110,7 @@
         <span class="kpi-label">Taux de défaut</span>
         <span class="kpi-value">{{ mdr }}%</span>
       </div>
-      <div class="kpi-trend down">↑ +3.5%</div>
+      
     </div>
 
     <div class="kpi-card kpi-card-wide">

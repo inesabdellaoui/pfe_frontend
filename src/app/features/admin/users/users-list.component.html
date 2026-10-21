@@ -69,7 +69,7 @@
            class="search-input"/>
     <select [(ngModel)]="filterRole" (change)="applyFilters()">
       <option value="">Tous les rôles</option>
-      <option value="ADMIN">Administrateur</option>
+      <option value="admin">Administrateur</option>
       <option value="RESPONSABLE_QUALITE">Resp. Qualité</option>
       <option value="CIP">Resp. CIP</option>
     </select>
@@ -190,7 +190,7 @@
           <label>Rôle <span class="required">*</span></label>
           <select [(ngModel)]="form.role" [class.input-error]="formErrors.role">
             <option value="">Sélectionner un rôle</option>
-            <option value="ADMIN">Administrateur</option>
+            <option value="admin">Administrateur</option>
             <option value="RESPONSABLE_QUALITE">Resp. Qualité</option>
             <option value="CIP">Resp. CIP</option>
           </select>

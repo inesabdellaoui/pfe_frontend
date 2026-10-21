@@ -24,36 +24,7 @@
     </div>
 
     <!-- Notifications -->
-    <div class="notifications-wrapper">
-      <button class="icon-btn" (click)="toggleNotifications()" aria-label="Notifications">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="1.8"
-             stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-        </svg>
-        <span class="notif-badge" *ngIf="notificationCount > 0">
-          {{ notificationCount }}
-        </span>
-      </button>
-
-      <div class="dropdown notif-dropdown" *ngIf="showNotifications">
-        <div class="dropdown-head">
-          <span class="drop-title">Notifications</span>
-          <button class="mark-read-btn" (click)="markAllRead()">Tout lire</button>
-        </div>
-        <div class="notif-item" *ngFor="let n of notifications">
-          <span class="notif-dot" [ngClass]="'dot-' + n.type"></span>
-          <div class="notif-body">
-            <span class="notif-msg">{{ n.message }}</span>
-            <span class="notif-time">{{ n.time }}</span>
-          </div>
-        </div>
-        <div class="notif-empty" *ngIf="notifications.length === 0">
-          Aucune notification
-        </div>
-      </div>
-    </div>
+    
 
     <!-- User menu -->
     <div class="user-menu-wrapper">

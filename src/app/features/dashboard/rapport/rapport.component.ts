@@ -72,14 +72,19 @@ export class RapportComponent implements OnInit {
 
   // Envoi mail — appel backend NestJS
   sendMail() {
-    if (!this.recipientEmail || !this.rapport) return;
-    this.isSendingMail = true;
-    // Le backend NestJS gérera le SMTP — appel simple
-    this.svc.sendRapportByMail(this.rapport.id_piece, this.recipientEmail).subscribe({
-      next: () => { this.mailSent = true; this.isSendingMail = false; },
-      error: () => { this.isSendingMail = false; }
-    });
-  }
+  if (!this.recipientEmail || !this.rapport) return;
+  this.isSendingMail = true;
+  this.svc.sendRapportByMail(this.rapport.id_piece, this.recipientEmail).subscribe({
+    next: () => {
+      this.mailSent    = true;
+      this.isSendingMail = false;
+    },
+    error: (err) => {
+      this.isSendingMail = false;
+      alert(err.error?.message || 'Email non autorisé — adresse non déclarée dans le système');
+    }
+  });
+}
 
   getSevClass(g: string): string {
   return g === 'Critique' ? 'sev-high' 

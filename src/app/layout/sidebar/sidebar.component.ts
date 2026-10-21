@@ -143,13 +143,7 @@ export class SidebarComponent implements OnInit {
     this.currentPath = this.router.url;
   }
 
-  toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
-    if (this.isBrowser) {
-      localStorage.setItem('sidebarCollapsed', String(this.isCollapsed));
-      window.dispatchEvent(new CustomEvent('sidebarToggle', { detail: this.isCollapsed }));
-    }
-  }
+  
 
   isActive(path: string): boolean {
     return this.currentPath === path;

@@ -96,7 +96,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let lot of filteredLots">
-          <td class="lot-ref">{{ lot.reference }}</td>
+          <td class="lot-ref">{{ lot.reference || lot.id_lot }}</td>
           <td>
             <span class="client-badge"
                   [class.badge-bmw]="lot.client === 'BMW'"

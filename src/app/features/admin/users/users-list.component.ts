@@ -12,17 +12,17 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./users-list.component.css']
 })
 export class UsersListComponent implements OnInit {
-  isLoading = false;
-  isSaving = false;
-  searchTerm = '';
-  filterRole = '';
-  showFormModal = false;
+  isLoading    = false;
+  isSaving     = false;
+  searchTerm   = '';
+  filterRole   = '';
+  showFormModal   = false;
   showDeleteModal = false;
-  isEditing = false;
+  isEditing    = false;
   userToDelete: any = null;
-  form: any = { prenom: '', nom: '', email: '', role: '', password: '', isActive: true };
-  formErrors: any = {};
-  users: any[] = [];
+  form: any    = { prenom: '', nom: '', email: '', role: '', password: '', isActive: true };
+  formErrors: any  = {};
+  users: any[]        = [];
   filteredUsers: any[] = [];
 
   private apiUrl = 'http://localhost:3000';
@@ -34,31 +34,42 @@ export class UsersListComponent implements OnInit {
     return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) };
   }
 
-  get totalUsers() { return this.users.length; }
-  get activeUsers() { return this.users.filter(u => u.isActive !== false).length; }
-  get adminUsers() { return this.users.filter(u => u.role === 'ADMIN').length; }
+  get totalUsers()  { return this.users.length; }
+  get activeUsers() { return this.users.filter(u => u.isActive === true).length; }
+  get adminUsers()  { return this.users.filter(u => u.role === 'admin').length; }
 
   ngOnInit() { this.loadUsers(); }
 
   loadUsers() {
     this.isLoading = true;
-    this.http.get<any[]>(`${this.apiUrl}/users`, this.getHeaders())
-      .subscribe({
-        next: (data) => { this.users = data; this.applyFilters(); this.isLoading = false; },
-        error: () => { this.isLoading = false; }
-      });
+    this.http.get<any[]>(`${this.apiUrl}/users`, this.getHeaders()).subscribe({
+      next: (data) => {
+        this.users = data;
+        this.applyFilters();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.log('Erreur users :', err);
+        this.isLoading = false;
+      }
+    });
   }
 
   applyFilters() {
     this.filteredUsers = this.users.filter(u => {
       const matchSearch = !this.searchTerm ||
-        `${u.prenom} ${u.nom} ${u.email}`.toLowerCase().includes(this.searchTerm.toLowerCase());
+        `${u.prenom} ${u.nom} ${u.email}`.toLowerCase()
+          .includes(this.searchTerm.toLowerCase());
       const matchRole = !this.filterRole || u.role === this.filterRole;
       return matchSearch && matchRole;
     });
   }
 
-  resetFilters() { this.searchTerm = ''; this.filterRole = ''; this.applyFilters(); }
+  resetFilters() {
+    this.searchTerm = '';
+    this.filterRole = '';
+    this.applyFilters();
+  }
 
   openCreate() {
     this.isEditing = false;
@@ -74,17 +85,25 @@ export class UsersListComponent implements OnInit {
     this.showFormModal = true;
   }
 
-  confirmDelete(user: any) { this.userToDelete = user; this.showDeleteModal = true; }
+  confirmDelete(user: any) {
+    this.userToDelete  = user;
+    this.showDeleteModal = true;
+  }
 
-  closeModal() { this.showFormModal = false; this.showDeleteModal = false; this.userToDelete = null; }
+  closeModal() {
+    this.showFormModal   = false;
+    this.showDeleteModal = false;
+    this.userToDelete    = null;
+  }
 
   validate(): boolean {
     this.formErrors = {};
-    if (!this.form.prenom) this.formErrors.prenom = 'Le prénom est obligatoire';
-    if (!this.form.nom) this.formErrors.nom = 'Le nom est obligatoire';
-    if (!this.form.email) this.formErrors.email = 'L\'email est obligatoire';
-    if (!this.form.role) this.formErrors.role = 'Le rôle est obligatoire';
-    if (!this.isEditing && !this.form.password) this.formErrors.password = 'Le mot de passe est obligatoire';
+    if (!this.form.prenom)   this.formErrors.prenom   = 'Le prénom est obligatoire';
+    if (!this.form.nom)      this.formErrors.nom      = 'Le nom est obligatoire';
+    if (!this.form.email)    this.formErrors.email    = 'L\'email est obligatoire';
+    if (!this.form.role)     this.formErrors.role     = 'Le rôle est obligatoire';
+    if (!this.isEditing && !this.form.password)
+      this.formErrors.password = 'Le mot de passe est obligatoire';
     return Object.keys(this.formErrors).length === 0;
   }
 
@@ -111,12 +130,22 @@ export class UsersListComponent implements OnInit {
   }
 
   getRoleLabel(role: string): string {
-    const map: Record<string, string> = { ADMIN: 'Administrateur', RESPONSABLE_QUALITE: 'Resp. Qualité', CIP: 'Resp. CIP' };
+    const map: Record<string, string> = {
+      'admin'               : 'Administrateur',
+      'responsable_qualite' : 'Resp. Qualité',
+      'operatrice_bmw'      : 'Opératrice BMW',
+      'operatrice_rr'       : 'Opératrice LR'
+    };
     return map[role] ?? role;
   }
 
   getRoleClass(role: string): string {
-    const map: Record<string, string> = { ADMIN: 'badge-admin', RESPONSABLE_QUALITE: 'badge-rq', CIP: 'badge-cip' };
+    const map: Record<string, string> = {
+      'admin'               : 'badge-admin',
+      'responsable_qualite' : 'badge-rq',
+      'operatrice_bmw'      : 'badge-cip',
+      'operatrice_rr'       : 'badge-cip'
+    };
     return map[role] ?? '';
   }
 

@@ -133,9 +133,7 @@
             <th>Lot ID</th>
             <th>Client</th>
             <th>Réception</th>
-            <th>Pièces</th>
-            <th>OK</th>
-            <th>NIO</th>
+            
             <th>MDR</th>
             <th>Statut</th>
             <th></th>
@@ -152,9 +150,7 @@
               </span>
             </td>
             <td class="date-cell">{{ lot.date_reception | date:'dd/MM/yyyy' }}</td>
-            <td><strong>{{ lot.total_pieces }}</strong></td>
-            <td class="ok-cell">{{ lot.ok }}</td>
-            <td class="nio-cell">{{ lot.nio }}</td>
+            
             <td>
               <span class="mdr-badge" [ngClass]="getMdrClass(lot.mdr)">
                 {{ lot.mdr }}%

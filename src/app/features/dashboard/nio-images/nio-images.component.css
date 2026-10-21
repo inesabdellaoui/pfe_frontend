@@ -205,3 +205,12 @@
   font-size: 11px; color: #94a3b8;
   text-align: center; margin-top: 6px;
 }
+
+.filters-bar {
+  position: sticky;
+  top: 64px;
+  z-index: 100;
+  background: white;
+  padding: 12px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}

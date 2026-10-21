@@ -110,10 +110,7 @@
           <span class="info-key">Nom pièce</span>
           <span class="info-val">{{ rapport.nom_piece || '—' }}</span>
         </div>
-        <div class="info-row">
-          <span class="info-key">Type pièce</span>
-          <span class="info-val">{{ rapport.type_piece || '—' }}</span>
-        </div>
+        
         <div class="info-row">
           <span class="info-key">Client</span>
           <span class="info-val">
@@ -150,52 +147,52 @@
     </div>
 
     <!-- Section 3 : Résultat inspection IA -->
-    <div class="doc-section">
-      <div class="section-title">
-        <div class="section-num">3</div>
-        Résultat d'inspection — Modèle YOLOv8
+    <!-- Section 3 : Résultat inspection IA -->
+<div class="doc-section">
+  <div class="section-title">
+    <div class="section-num">3</div>
+    Résultat d'inspection — Modèle LeatherGuard AI
+  </div>
+  <div class="ai-result-block">
+    <div class="ai-result-left">
+      <div class="ai-result-badge"
+           [class.ai-ok]="rapport.resultat === 'IO'"
+           [class.ai-nio]="rapport.resultat === 'NIO'">
+        {{ rapport.resultat }}
       </div>
-      <div class="ai-result-block">
-        <div class="ai-result-left">
-          <div class="ai-result-badge"
-               [class.ai-ok]="rapport.resultat === 'OK'"
-               [class.ai-nio]="rapport.resultat === 'NIO'">
-            {{ rapport.resultat }}
-          </div>
-          <div class="ai-meta">
-            <div class="ai-meta-row">
-              <span>Date inspection</span>
-              <strong>{{ rapport.date_inspection | date:'dd/MM/yyyy HH:mm' }}</strong>
-            </div>
-            <div class="ai-meta-row" *ngIf="rapport.confidence">
-              <span>Confiance modèle</span>
-              <strong>{{ (rapport.confidence * 100).toFixed(1) }}%</strong>
-            </div>
-            <div class="ai-meta-row" *ngIf="rapport.model_version">
-              <span>Version modèle</span>
-              <strong>{{ rapport.model_version }}</strong>
-            </div>
-          </div>
+      <div class="ai-meta">
+        <div class="ai-meta-row">
+          <span>Date inspection</span>
+          <strong>{{ rapport.date_inspection | date:'dd/MM/yyyy HH:mm' }}</strong>
         </div>
-        <div class="ai-result-right">
-  <!-- Image originale -->
-  <div class="img-report-wrap" *ngIf="rapport.image_path">
-    <img [src]="getImageUrl(rapport.image_path)"
-         [alt]="rapport.reference_piece"
-         (error)="$any($event.target).src='assets/images/no-image.png'"/>
-    <div class="img-caption">Image inspectée</div>
-  </div>
-
-  <!-- Carte SHAP -->
-  <div class="img-report-wrap" *ngIf="rapport.shap_image_path">
-    <img [src]="getImageUrl(rapport.shap_image_path)"
-         alt="Carte SHAP"
-         (error)="$any($event.target).src='assets/images/no-image.png'"/>
-    <div class="img-caption">Carte d'explication SHAP</div>
-  </div>
-</div>
+        <div class="ai-meta-row" *ngIf="rapport.confidence">
+          <span>Confiance modèle</span>
+          <strong>{{ (rapport.confidence * 100).toFixed(1) }}%</strong>
+        </div>
+        <div class="ai-meta-row" *ngIf="rapport.model_version">
+          <span>Version modèle</span>
+          <strong>{{ rapport.model_version }}</strong>
+        </div>
       </div>
     </div>
+    <div class="ai-result-right">
+      <!-- Image inspectée -->
+      <div class="img-report-wrap" *ngIf="rapport.image_path">
+        <img [src]="getImageUrl(rapport.image_path)"
+             [alt]="rapport.reference_piece"
+             (error)="$any($event.target).src='assets/images/no-image.png'"/>
+        <div class="img-caption">Image inspectée</div>
+      </div>
+      <!-- Carte SHAP -->
+      <div class="img-report-wrap" *ngIf="rapport.shap_image_path">
+        <img [src]="getImageUrl(rapport.shap_image_path)"
+             alt="Carte SHAP"
+             (error)="$any($event.target).src='assets/images/no-image.png'"/>
+        <div class="img-caption">Carte d'explication SHAP</div>
+      </div>
+    </div>
+  </div>
+</div>
 
     <!-- Section 4 : Défauts (uniquement NIO) -->
     <div class="doc-section" *ngIf="rapport.resultat === 'NIO' && rapport.defauts?.length > 0">
